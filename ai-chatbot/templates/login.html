@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spark — welcome</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  .auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+  }
+  .auth-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--coral), var(--accent) 70%);
+    box-shadow: 0 0 22px rgba(182, 148, 245, 0.45);
+    margin-bottom: 18px;
+  }
+  .auth-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0 0 4px;
+  }
+  .auth-sub {
+    color: var(--text-dim);
+    font-size: 13.5px;
+    margin: 0 0 24px;
+  }
+
+  /* ---- Choice screen ---- */
+  .choice-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    cursor: pointer;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .choice-btn:hover { border-color: var(--accent); }
+  .choice-btn-title {
+    font-size: 14.5px;
+    font-weight: 600;
+    display: block;
+  }
+  .choice-btn-sub {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    display: block;
+    margin-top: 2px;
+  }
+  .choice-btn-arrow {
+    color: var(--accent);
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+  .choice-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .choice-btn.primary .choice-btn-title,
+  .choice-btn.primary .choice-btn-sub {
+    color: #241629;
+  }
+  .choice-btn.primary .choice-btn-arrow { color: #241629; }
+
+  /* ---- Form screen ---- */
+  .back-link {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 16px;
+  }
+  .back-link:hover { color: var(--text); }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .field input[type="text"],
+  .field input[type="password"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  .field input:focus { outline: none; border-color: var(--accent); }
+
+  .remember-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .remember-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+  .remember-row label {
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+
+  .auth-error {
+    color: var(--coral);
+    font-size: 13px;
+    margin: 0 0 14px;
+    min-height: 16px;
+  }
+  .auth-submit {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #241629;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .auth-submit:disabled { opacity: 0.5; cursor: default; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-mark"></div>
+
+    <!-- Screen 1: choose register or log in -->
+    <div id="choiceScreen">
+      <h1 class="auth-title">Spark mein aapka swagat hai</h1>
+      <p class="auth-sub">Shuru karne ke liye ek option chuno.</p>
+
+      <button type="button" class="choice-btn primary" id="goRegister">
+        <span>
+          <span class="choice-btn-title">Register karo</span>
+          <span class="choice-btn-sub">Naya account banao</span>
+        </span>
+        <span class="choice-btn-arrow">→</span>
+      </button>
+
+      <button type="button" class="choice-btn" id="goLogin">
+        <span>
+          <span class="choice-btn-title">Already have an account</span>
+          <span class="choice-btn-sub">Apne account se log in karo</span>
+        </span>
+        <span class="choice-btn-arrow">→</span>
+      </button>
+    </div>
+
+    <!-- Screen 2: actual form -->
+    <div id="formScreen" class="hidden">
+      <button type="button" class="back-link" id="backBtn">← Wapas</button>
+      <h1 class="auth-title" id="formTitle">Log in</h1>
+      <p class="auth-sub" id="formSub">Apni chat history dekhne ke liye sign in karo.</p>
+
+      <p class="auth-error" id="authError"></p>
+
+      <form id="authForm">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="current-password" required>
+        </div>
+
+        <div class="remember-row" id="rememberRow">
+          <input type="checkbox" id="rememberMe">
+          <label for="rememberMe">Password yaad rakho (logged in raho)</label>
+        </div>
+
+        <button type="submit" class="auth-submit" id="submitBtn">Log in</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const choiceScreen = document.getElementById("choiceScreen");
+  const formScreen = document.getElementById("formScreen");
+  const goRegister = document.getElementById("goRegister");
+  const goLogin = document.getElementById("goLogin");
+  const backBtn = document.getElementById("backBtn");
+
+  const form = document.getElementById("authForm");
+  const usernameInput = document.getElementById("username");
+  const passwordInput = document.getElementById("password");
+  const rememberRow = document.getElementById("rememberRow");
+  const rememberMe = document.getElementById("rememberMe");
+  const submitBtn = document.getElementById("submitBtn");
+  const errorEl = document.getElementById("authError");
+  const formTitle = document.getElementById("formTitle");
+  const formSub = document.getElementById("formSub");
+
+  let mode = "login";
+
+  function showForm(selectedMode) {
+    mode = selectedMode;
+    errorEl.textContent = "";
+    usernameInput.value = "";
+    passwordInput.value = "";
+    choiceScreen.classList.add("hidden");
+    formScreen.classList.remove("hidden");
+
+    if (mode === "register") {
+      formTitle.textContent = "Register karo";
+      formSub.textContent = "Naya account banao — 6+ character password.";
+      submitBtn.textContent = "Sign up";
+      rememberRow.classList.add("hidden");
+    } else {
+      formTitle.textContent = "Log in";
+      formSub.textContent = "Apni chat history dekhne ke liye sign in karo.";
+      submitBtn.textContent = "Log in";
+      rememberRow.classList.remove("hidden");
+    }
+  }
+
+  goRegister.addEventListener("click", () => showForm("register"));
+  goLogin.addEventListener("click", () => showForm("login"));
+
+  backBtn.addEventListener("click", () => {
+    formScreen.classList.add("hidden");
+    choiceScreen.classList.remove("hidden");
+    errorEl.textContent = "";
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorEl.textContent = "";
+    submitBtn.disabled = true;
+
+    const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
+    const payload = {
+      username: usernameInput.value.trim(),
+      password: passwordInput.value,
+    };
+    if (mode === "login") {
+      payload.remember = rememberMe.checked;
+    }
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        errorEl.textContent = data.error || "Kuch gadbad ho gayi.";
+        return;
+      }
+
+      window.location.href = "/";
+    } catch (err) {
+      errorEl.textContent = "Server tak nahi pahunch paya.";
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
